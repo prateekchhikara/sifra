@@ -1,1 +1,4 @@
-# ai-assistant
+![](images/cover.png)
+
+# SIFRA 
+
