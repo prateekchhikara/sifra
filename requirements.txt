@@ -1,0 +1,7 @@
+langchain
+rich
+openai
+click
+langchain_openai
+pyfiglet
+python-dotenv
