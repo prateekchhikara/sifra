@@ -2,6 +2,7 @@ langchain
 rich
 openai
 click
+langchain_core
 langchain_openai
 pyfiglet
 python-dotenv
