@@ -94,6 +94,7 @@ class MemoryManager:
         Returns:
             str: The prepared prompt.
         """
+
         return initialize_memory_prompt.replace("{person_information}", data)
 
     def _prepare_memory_update_prompt(self, user_response: str, memory: dict) -> str:
@@ -152,7 +153,7 @@ class MemoryManager:
         Returns:
             None
         """
-        with open("../memory.json", "w") as file:
+        with open("memory.json", "w") as file:
             json.dump(memory_dict, file, indent=4)
 
     def _load_memory(self) -> Dict[str, Any]:

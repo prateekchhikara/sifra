@@ -22,10 +22,18 @@ from prompts import intro_prompt
 from memory.memory import MemoryManager
 from langchain_core.runnables import RunnableSequence
 
+
+
+
+st.title("Welcome, I am SIFRA 🤖")
+st.markdown("(Super Intelligent and Friendly Responsive Agent)")
+
+
+
 # Initialize the LLM model -------------------------------------------------------
 llmMain = ChatOpenAI(
-    model= "gpt-4", 
-    # model = "gpt-3.5-turbo-0125",
+    # model= "gpt-4", 
+    model = "gpt-3.5-turbo-0125",
     streaming=True,
     temperature=0.0,
     max_tokens=200,
@@ -44,9 +52,18 @@ def load_css():
         css = f"<style>{f.read()}</style>"
         st.markdown(css, unsafe_allow_html=True)
 
-def initialize_session_state(data):
+def initialize_session_state():
 
+
+    # Create a file uploader in the sidebar
+    # data = st.sidebar.file_uploader("Choose a text file", type="txt")
+    # data = data.read().decode("utf-8")
+    # st.sidebar.write("File content:")
+    # st.sidebar.markdown(data)
+
+    data = get_bio("person_info.txt")
     
+
     mem.generate_initial_memory(data)
 
     # Generate the prompt for the AI to introduce itself --------------------------------
@@ -84,7 +101,7 @@ def initialize_session_state(data):
         )
 
     if "memory" not in st.session_state:
-        st.session_state.memory = memory
+        st.session_state.memory = show_memory()
 
     if "messages" not in st.session_state:
         st.session_state.messages = [
@@ -96,45 +113,45 @@ def initialize_session_state(data):
 def on_click_callback():
     with get_openai_callback() as cb:
         human_prompt = st.session_state.human_prompt
-        llm_response = st.session_state.conversation.run(
-            human_prompt
-        )
 
+        st.session_state.messages.append(HumanMessage(human_prompt))
+
+        # llm_response = st.session_state.conversation.run(
+        #     human_prompt
+        # )
+
+        llm_response = llmMain(st.session_state.messages).content
+
+        st.session_state.messages.append(AIMessage(llm_response))
+
+
+        st.session_state.messages = managerMessageList(st.session_state.messages, k = 5)
+
+        # add the messages to the history
         st.session_state.history.append(
             Message("human", human_prompt)
         )
         st.session_state.history.append(
             Message("ai", llm_response)
         )
-        st.session_state.token_count += cb.total_tokens
+        # st.session_state.token_count += cb.total_tokens
+        st.session_state.memory = mem.modify_memory(human_prompt)
+        st.session_state.messages[1] = SystemMessage(f"About me: {json.dumps(st.session_state.memory)}")
 
         st.session_state.memory = show_memory()
 
-        st.session_state.messages.append(HumanMessage(human_prompt))
-        st.session_state.messages.append(AIMessage(llm_response))
 
-        st.session_state.messages = managerMessageList(st.session_state.messages, k = 5)
-
-        memory = mem.modify_memory(human_prompt)
-        st.session_state.messages[1] = SystemMessage(f"About me: {json.dumps(memory)}")
-
-
-
-# Create a file uploader in the sidebar
-uploaded_file = st.sidebar.file_uploader("Choose a text file", type="txt")
-
-load_css()
-initialize_session_state(uploaded_file)
-
-st.title("Welcome, I am SIFRA 🤖")
-st.markdown("(Super Intelligent and Friendly Responsive Agent)")
 
 chat_placeholder = st.container()
 prompt_placeholder = st.form("chat-form")
+
+load_css()
+
+initialize_session_state()
+
+
+
 # display_memory = st.empty()
-
-
-
 
 
 with chat_placeholder:
@@ -162,7 +179,7 @@ with prompt_placeholder:
     cols = st.columns((6, 1))
     cols[0].text_input(
         "Chat",
-        value="Hello bot",
+        value="",
         label_visibility="collapsed",
         key="human_prompt",
     )
@@ -178,6 +195,12 @@ st.markdown("Memory 🧠")
 st.json(st.session_state.memory)
 
 
+
+
+
+
+# The below script allows users to submit a form in a Streamlit app by pressing 'Enter', 
+# simulating a click on the 'Submit' button.
 
 
 components.html("""
@@ -205,17 +228,3 @@ streamlitDoc.addEventListener('keydown', function(e) {
 )
 
 
-
-
-
-# Check if a file has been uploaded
-if uploaded_file is not None:
-    # Read the content of the file
-    data = uploaded_file.read().decode("utf-8")
-    
-    # Display the content of the file in the sidebar without horizontal scroll
-    st.sidebar.write("File content:")
-    st.sidebar.markdown(data)
-
-else:
-    st.sidebar.write("Please upload a text file.")

@@ -59,8 +59,8 @@ def cli(pinfo):
 
     # Initialize the LLM model -------------------------------------------------------
     llmMain = ChatOpenAI(
-        model= "gpt-4", 
-        # model = "gpt-3.5-turbo-0125",
+        # model= "gpt-4", 
+        model = "gpt-3.5-turbo-0125",
         streaming=True,
         temperature=0.0,
         max_tokens=200,
