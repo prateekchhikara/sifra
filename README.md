@@ -2,6 +2,13 @@
 
 # SIFRA 
 
+## Framework Overview
+
+### Phase-1
+![](images/fig1.png)
+
+### Phase-2
+![](images/fig2.png)
 
 ## Features
 
