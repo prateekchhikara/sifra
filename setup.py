@@ -7,16 +7,17 @@ def read_requirements():
 
 entry_points = {
     'console_scripts': [
-        'sifra=cli:cli',
+        'sifra = cli:cli',
     ],
 }
 
 setup(
-    author='Prateek Chhikara',
-    name='sifra',
-    version='1.0',
-    packages=find_packages(),
-    include_package_data=True,
-    install_requires=read_requirements(),
-    entry_points=entry_points,
+    author = 'Prateek Chhikara',
+    author_email = 'prateekchhikara24@gmail.com',
+    name = 'sifra',
+    version = '1.0',
+    packages = find_packages(),
+    include_package_data = True,
+    install_requires = read_requirements(),
+    entry_points = entry_points,
 )

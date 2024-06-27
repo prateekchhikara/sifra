@@ -1,8 +1,5 @@
-from dotenv import load_dotenv
 from langchain.output_parsers import PydanticOutputParser
 
-from langchain.llms import OpenAI
-from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate
@@ -10,6 +7,9 @@ from langchain.prompts.chat import (
 
 from prompts import initialize_memory_prompt, memory_update_prompt
 from logger import logger
+
+import warnings
+warnings.filterwarnings("ignore")
 
 
 import json
@@ -39,6 +39,7 @@ class MemoryManager:
         Returns:
             None
         """
+
         parser = PydanticOutputParser(pydantic_object=Personality)
         prompt = self._prepare_initial_memory_prompt(data)
         request = self._format_request(prompt, parser)
@@ -81,8 +82,8 @@ class MemoryManager:
         memory_dict = self._extract_memory_dict(results_values)
         self._save_memory(memory_dict)
 
-        self._log_action(results_values.action)
-        return memory_dict
+        update_type = self._log_action(results_values.action)
+        return memory_dict, update_type
 
     def _prepare_initial_memory_prompt(self, data: str) -> str:
         """
@@ -153,7 +154,8 @@ class MemoryManager:
         Returns:
             None
         """
-        with open("memory.json", "w") as file:
+
+        with open("memory.json", "w+") as file:
             json.dump(memory_dict, file, indent=4)
 
     def _load_memory(self) -> Dict[str, Any]:
@@ -181,6 +183,9 @@ class MemoryManager:
         else:
             logger.info(f"Memory Updated Successfully by action: {action}")
             print("Memory Updated Successfully:", action.value)
+
+
+        return action.value
 
 
 

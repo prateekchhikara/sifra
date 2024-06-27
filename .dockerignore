@@ -1,0 +1,8 @@
+.env
+*log
+*json
+*ipynb
+*__pycache__
+*.egg-info
+memory.json
+.DS_Store

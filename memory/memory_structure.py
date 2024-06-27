@@ -76,9 +76,14 @@ class Action(str, Enum):
 
 class PersonalityUpdate(Personality, BaseModel):
     action: Action = Field(
-        description="Whether the new prompt is adding a new record, updating a record, or deleting a record. If there is no change, the action should be 'Nothing'.",
-        default = Action.Nothing
+        default=Action.Nothing,
+        description="""Specifies the type of update operation to be performed:
+        - Add: Created a new personality record 
+        - Update: Modified an existing personality record"
+        - Delete: Removed an existing personality record"
+        - Nothing: No changes required (default)"""
     )
+
 
 if __name__ == "__main__":
     obj = PersonalityUpdate()

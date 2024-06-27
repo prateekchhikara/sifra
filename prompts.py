@@ -14,7 +14,7 @@ intro_prompt = """
 
 """
 
-# Generate the prompt for the AI to analyze the memory
+# Prompt for the AI to initiate the memory
 
 initialize_memory_prompt = """
 You are a very smart AI assistant who is part of a team building a knowledge base regarding an individual to assist in personalized conversation.
@@ -32,6 +32,7 @@ You have to be very precise and to the point.
 ```
 """
 
+# Prompt for the AI to update the memory
 
 memory_update_prompt = """
 You are a smart memory manager which controls the memory of a large language model. You can perform three operations: (1) add into the memory, (2) update the memory and (3) delete from the memory.
@@ -60,6 +61,6 @@ The input prompt is mentioned in the triple backticks. You have to analyze the i
 
 You should return the updated memory in the same format as the above json file.
 
-Also, return whether it is a add, update, or delete action.
+Also, return whether it is a Add, Update, or Delete action using the below format.
 
 """

@@ -1,43 +1,73 @@
+import warnings
+warnings.filterwarnings("ignore")
+
 from dataclasses import dataclass
 from typing import Literal
 import streamlit as st
 from langchain_openai.chat_models import ChatOpenAI
-from langchain import OpenAI
 from langchain.callbacks import get_openai_callback
-from langchain.chains import ConversationChain
-from langchain.chains.conversation.memory import ConversationSummaryMemory
 import streamlit.components.v1 as components
 from dotenv import load_dotenv
 load_dotenv()
 from memory.memory import MemoryManager
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
-import json
+import json, time
 from langchain import PromptTemplate
 # Local imports
 from utils import (
-    horizontalLine, managerMessageList, get_memory, initialize_global_variables, 
-    get_bio, check_exit, show_memory, show_messages
+    managerMessageList, get_memory, get_bio, show_memory
     )
 from prompts import intro_prompt
 from memory.memory import MemoryManager
 from langchain_core.runnables import RunnableSequence
+import constants
 
+warnings.filterwarnings("ignore")
 
 
 
 st.title("Welcome, I am SIFRA 🤖")
-st.markdown("(Super Intelligent and Friendly Responsive Agent)")
+full_form = "Super Intelligent and Friendly Responsive Agent"
+colored_full_form = " ".join([f"<span style='color: blue; font-size:20px; font-weight: bold;'> {word[0]}</span>{word[1:]}" for word in full_form.split() if word != "and"])
+st.markdown(f"({colored_full_form} )", unsafe_allow_html=True)
 
+# Check if memory exists in session state
+if "memory" not in st.session_state:
+
+    col1, col2 = st.columns([1, 2])
+
+    with col1:
+        st.image("static/ai-avatar.png", width=200)
+    with col2:
+        # List of 5 elements
+        elements = [
+            "Advanced Data Handling: Manages diverse unstructured data sources seamlessly.", 
+            "Automatic Profiling: Deduces user details and preferences automatically.", 
+            "Personalized Interaction: Tailors responses based on contextual user profiles.", 
+            "Continuous Adaptation: Learns and adjusts to user preferences over time.", 
+        ]
+        # Iterate through elements and display them one by one
+        for element in elements:
+            time.sleep(0.5)
+            title, description = element.split(": ", 1)
+            st.markdown(f"- <span style='color: red;'><b>{title}:</b></span> {description}", unsafe_allow_html=True)
+        
+        time.sleep(0.5)
+            
+
+        st.markdown("---")  
+
+    
 
 
 # Initialize the LLM model -------------------------------------------------------
 llmMain = ChatOpenAI(
-    # model= "gpt-4", 
-    model = "gpt-3.5-turbo-0125",
-    streaming=True,
-    temperature=0.0,
-    max_tokens=200,
+    model = constants.model,
+    streaming = True,
+    temperature = 0.0,
+    max_tokens = constants.max_tokens,
 )
+
 
 mem = MemoryManager(llmMain)
 
@@ -53,15 +83,21 @@ def load_css():
         st.markdown(css, unsafe_allow_html=True)
 
 def initialize_session_state():
+    data = None
 
+    # File uploader in the sidebar
+    uploaded_file = st.sidebar.file_uploader("Choose a text file", type="txt")
+    if uploaded_file is not None:
+        data = uploaded_file.read().decode("utf-8")
+        st.sidebar.markdown("**Uploaded Text:**")
+        st.sidebar.markdown(data)
 
-    # Create a file uploader in the sidebar
-    # data = st.sidebar.file_uploader("Choose a text file", type="txt")
-    # data = data.read().decode("utf-8")
-    # st.sidebar.write("File content:")
-    # st.sidebar.markdown(data)
+    # Wait until file is uploaded and data is populated
+    while data is None:
+        st.sidebar.write("Please upload a text file.")
+        st.stop()
 
-    data = get_bio("person_info.txt")
+    # data = get_bio("person_info.txt")
     
 
     mem.generate_initial_memory(data)
@@ -76,29 +112,23 @@ def initialize_session_state():
 
     # Collecting all messages -------------------------------------------------------
     memory = get_memory()
-    # messages = [
-    #     SystemMessage("You are Sifra, an AI assistant. You are very amiable and helpful. You love assisting people and help them in the conversation. Start with a greeting and then ask the person how they are doing. You can pick one of the points from the information so that it seems like you know the person well."),
-    #     SystemMessage(f"About me: {json.dumps(memory)}"),
-    #     AIMessage(response)
-    # ]
 
+
+    if "update_type" not in st.session_state:
+        st.session_state.update_type = "Nothing"
 
     if "history" not in st.session_state:
-        st.session_state.history = []
+        st.session_state.history = [Message("ai", response)]
     if "token_count" not in st.session_state:
         st.session_state.token_count = 0
     if "conversation" not in st.session_state:
         llm = ChatOpenAI(
-            # model= "gpt-4", 
-            model = "gpt-3.5-turbo-0125",
-            streaming=True,
-            temperature=0.0,
-            max_tokens=200,
+            model = constants.model,
+            streaming = True,
+            temperature = 0.0,
+            max_tokens = constants.max_tokens,
         )
-        st.session_state.conversation = ConversationChain(
-            llm=llm,
-            memory=ConversationSummaryMemory(llm=llm),
-        )
+
 
     if "memory" not in st.session_state:
         st.session_state.memory = show_memory()
@@ -116,10 +146,6 @@ def on_click_callback():
 
         st.session_state.messages.append(HumanMessage(human_prompt))
 
-        # llm_response = st.session_state.conversation.run(
-        #     human_prompt
-        # )
-
         llm_response = llmMain(st.session_state.messages).content
 
         st.session_state.messages.append(AIMessage(llm_response))
@@ -135,10 +161,15 @@ def on_click_callback():
             Message("ai", llm_response)
         )
         # st.session_state.token_count += cb.total_tokens
-        st.session_state.memory = mem.modify_memory(human_prompt)
+        st.session_state.memory, update_type = mem.modify_memory(human_prompt)
         st.session_state.messages[1] = SystemMessage(f"About me: {json.dumps(st.session_state.memory)}")
 
         st.session_state.memory = show_memory()
+
+        st.session_state.update_type = update_type
+
+        st.session_state.human_prompt = ""
+
 
 
 
@@ -147,7 +178,8 @@ prompt_placeholder = st.form("chat-form")
 
 load_css()
 
-initialize_session_state()
+if "memory" not in st.session_state:
+    initialize_session_state()
 
 
 
@@ -189,18 +221,19 @@ with prompt_placeholder:
         on_click=on_click_callback, 
     )
 
+    st.write(f"Memory Status: {st.session_state.update_type}")
+
+
+
 
 st.markdown("---")
 st.markdown("Memory 🧠")
+
+
 st.json(st.session_state.memory)
 
 
 
-
-
-
-# The below script allows users to submit a form in a Streamlit app by pressing 'Enter', 
-# simulating a click on the 'Submit' button.
 
 
 components.html("""

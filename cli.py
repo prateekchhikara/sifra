@@ -1,9 +1,18 @@
+
+import warnings
+warnings.filterwarnings("ignore")
+
 import click
 import json
-from logger import logger
+
 from rich import print
 from rich.console import Console
 from pyfiglet import figlet_format
+
+
+warnings.filterwarnings("ignore")
+
+from logger import logger
 
 # Langchain imports
 from langchain_core.runnables import RunnableSequence
@@ -18,10 +27,12 @@ from utils import (
     )
 from prompts import intro_prompt
 from memory.memory import MemoryManager
+import constants
 
 
-import warnings
 warnings.filterwarnings("ignore")
+
+
 
 
 
@@ -52,7 +63,11 @@ def cli(pinfo):
     horizontalLine()
 
     # Get the information of the person ---------------------------------------------
-    data = get_bio(pinfo)
+    try:
+        data = get_bio(pinfo)
+    except FileNotFoundError:
+        console.print("The file containing the information of the person was not found. Please try again.", style = "bold red")
+        return
 
     console.print(data, style = "italic white")
     horizontalLine()
@@ -60,10 +75,10 @@ def cli(pinfo):
     # Initialize the LLM model -------------------------------------------------------
     llmMain = ChatOpenAI(
         # model= "gpt-4", 
-        model = "gpt-3.5-turbo-0125",
+        model = constants.model,
         streaming=True,
         temperature=0.0,
-        max_tokens=200,
+        max_tokens=constants.max_tokens,
     )
 
     # write initial memory to file -------------------------------------------
@@ -134,7 +149,7 @@ def cli(pinfo):
         messages = managerMessageList(messages, k = 5)
 
         # Modify the memory ------------------------------------------------------------
-        memory = mem.modify_memory(keyboard)
+        memory, update_type = mem.modify_memory(keyboard)
         messages[1] = SystemMessage(f"About me: {json.dumps(memory)}")
 
         # import pdb; pdb.set_trace()

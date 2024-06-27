@@ -59,6 +59,17 @@ After the installation has been completed. Run ```sifra``` in your terminal.
 
 ### 2. GUI
 
+For GUI, Streamlit is used which is a powerful framework for building interactive web applications. 
+
+```
+streamlit run gui.py
+```
+
+If you would like to run the streamlit using docker then you can build the docker by using the below command.
+
+```
+docker compose up --build
+```
 
 ## 🚀 Quick Demo Examples
 
@@ -71,3 +82,29 @@ After the installation has been completed. Run ```sifra``` in your terminal.
 
 
 ## 🎓 References
+
+```
+@article{packer2023memgpt,
+  title={Memgpt: Towards llms as operating systems},
+  author={Packer, Charles and Fang, Vivian and Patil, Shishir G and Lin, Kevin and Wooders, Sarah and Gonzalez, Joseph E},
+  journal={arXiv preprint arXiv:2310.08560},
+  year={2023}
+}
+
+@article{lin2024swiftsage,
+  title={Swiftsage: A generative agent with fast and slow thinking for complex interactive tasks},
+  author={Lin, Bill Yuchen and Fu, Yicheng and Yang, Karina and Brahman, Faeze and Huang, Shiyu and Bhagavatula, Chandra and Ammanabrolu, Prithviraj and Choi, Yejin and Ren, Xiang},
+  journal={Advances in Neural Information Processing Systems},
+  volume={36},
+  year={2024}
+}
+
+@article{majumder2023clin,
+  title={Clin: A continually learning language agent for rapid task adaptation and generalization},
+  author={Majumder, Bodhisattwa Prasad and Mishra, Bhavana Dalvi and Jansen, Peter and Tafjord, Oyvind and Tandon, Niket and Zhang, Li and Callison-Burch, Chris and Clark, Peter},
+  journal={arXiv preprint arXiv:2310.10134},
+  year={2023}
+}
+
+
+```
