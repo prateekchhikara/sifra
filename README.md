@@ -2,7 +2,7 @@
 
 # SIFRA 
 
-SIFRA (Super Intelligent & Friendly Responsive Agent) is a personalized AI agent designed to revolutionize the way users interact with technology. By leveraging generative AI techniques, this AI agent can understand and remember user details and preferences from unstructured data sources, providing a highly tailored and engaging conversational experience. Whether it is remembering your favorite hobbies or deducing preferences from blog posts, the Mem0 AI Assistant ensures that every interaction feels personal and intuitive.
+SIFRA (Super Intelligent & Friendly Responsive Agent) is a personalized AI agent designed to revolutionize the way users interact with technology. By leveraging generative AI techniques, this AI agent can understand and remember user details and preferences from unstructured data sources, providing a highly tailored and engaging conversational experience. Whether it is remembering your favorite hobbies or deducing preferences from blog posts, Sifra ensures that every interaction feels personal and intuitive.
 
 SIFRA has the following capabilitites:
 
@@ -50,7 +50,7 @@ There are two ways in which SIFRA can be accessed.
 A python package is created though which SIFRA-cli can be accessed. The user just needs to install the package using the following command. Running the command will install the required dependencies in your local.
 
 ```
-pip install sifra
+pip install --editable .
 ```
 
 After the installation has been completed. Run ```sifra``` in your terminal.
@@ -61,6 +61,13 @@ After the installation has been completed. Run ```sifra``` in your terminal.
 
 
 ## 🚀 Quick Demo Examples
+
+
+![Watch the video](https://github.com/prateekchhikara/ai-assistant/assets/46902268/2bab90ee-f129-43fb-8716-0094d39d5d2d)
+
+
+![Watch the video](https://github.com/prateekchhikara/ai-assistant/assets/46902268/898595f4-d5dd-4834-bb0e-90615f9d5a7d)
+
 
 
 ## 🎓 References
